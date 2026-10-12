@@ -1,0 +1,51 @@
+name: Build Wishlist Savings APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+
+    - name: Download Android WebView Template
+      run: |
+        git clone https://github.com/Redman1031/WebView-App.git android
+
+
+    - name: Add HTML App
+      run: |
+        mkdir -p android/app/src/main/assets
+        cp index.html android/app/src/main/assets/
+
+
+    - name: Add App Icon
+      run: |
+        cp icon-512.png android/app/src/main/res/drawable/icon.png
+
+
+    - name: Build APK
+      run: |
+        cd android
+        chmod +x gradlew
+        ./gradlew assembleDebug
+
+
+    - name: Save APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: Wishlist-Savings-APK
+        path: android/app/build/outputs/apk/debug/*.apk
